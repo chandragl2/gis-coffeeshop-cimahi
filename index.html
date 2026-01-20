@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GIS Coffeeshop Cimahi - User</title>
+
+    <!-- Mapbox GL JS -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css"
+      rel="stylesheet"
+    />
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="navbar-container">
+        <h1 class="navbar-title">☕ GIS Coffeeshop Cimahi</h1>
+        <div class="navbar-buttons">
+          <button class="btn-about" id="btnAbout">Tentang</button>
+          <a href="login-admin.html" class="btn-admin">Admin Panel</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="main-container">
+      <!-- Sidebar - Search -->
+      <aside class="sidebar">
+        <div class="search-container">
+          <h2>Cari Coffeeshop</h2>
+          <input
+            type="text"
+            id="searchInput"
+            class="search-input"
+            placeholder="Ketik nama coffeeshop..."
+          />
+          <div id="searchResults" class="search-results"></div>
+        </div>
+
+        <!-- Info Coffeeshop -->
+        <div class="info-container">
+          <h3>Informasi Coffeeshop</h3>
+          <div id="coffeeshopInfo" class="coffeeshop-info">
+            <p class="info-placeholder">
+              Klik marker di peta untuk melihat informasi
+            </p>
+          </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="legend-container">
+          <h3>Keterangan</h3>
+          <div class="legend-item">
+            <span class="marker-icon">📍</span>
+            <span>Lokasi Coffeeshop</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Map Container -->
+      <div id="map" class="map-container"></div>
+    </div>
+
+    <!-- Modal - About -->
+    <div id="aboutModal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn" id="closeAbout">&times;</span>
+        <h2>Tentang Website</h2>
+        <div class="modal-body">
+          <h3>Sistem Informasi Geografis Coffeeshop Kota Cimahi</h3>
+          <p>
+            Website ini dibuat untuk menampilkan lokasi dan informasi coffeeshop
+            yang tersebar di Kota Cimahi. Dengan menggunakan teknologi peta
+            interaktif Mapbox GL JS, pengguna dapat dengan mudah menemukan
+            coffeeshop favorit mereka berdasarkan lokasi geografis.
+          </p>
+
+          <h4>Fitur Utama:</h4>
+          <ul>
+            <li>🗺️ Peta interaktif Kota Cimahi</li>
+            <li>📍 Marker lokasi coffeeshop</li>
+            <li>🔍 Fitur pencarian coffeeshop</li>
+            <li>ℹ️ Informasi detail setiap coffeeshop</li>
+          </ul>
+
+          <h4>Cara Menggunakan:</h4>
+          <ol>
+            <li>Gunakan search bar di sebelah kiri untuk mencari coffeeshop</li>
+            <li>Klik marker di peta untuk melihat detail coffeeshop</li>
+            <li>Zoom in/out peta menggunakan scroll atau tombol zoom</li>
+            <li>Drag peta untuk melihat area lain</li>
+          </ol>
+
+          <p style="margin-top: 20px; color: #666; font-size: 12px">
+            <strong>Catatan:</strong> Data coffeeshop pada website ini adalah
+            data dummy untuk keperluan tugas kuliah.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+  </body>
+</html>

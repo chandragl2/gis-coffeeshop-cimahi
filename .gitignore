@@ -1,0 +1,7 @@
+# Abaikan semua file Markdown
+*.md
+
+# Optional
+node_modules/
+.env
+.DS_Store
