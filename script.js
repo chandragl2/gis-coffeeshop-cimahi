@@ -1,6 +1,5 @@
-// ==========================================
 // DATA DUMMY COFFEESHOP
-// ==========================================
+
 const coffeeshops = [
   {
     id: 1,
@@ -76,9 +75,7 @@ const coffeeshops = [
   },
 ];
 
-// ==========================================
 // MAPBOX INITIALIZATION
-// ==========================================
 
 // Set Mapbox Access Token
 mapboxgl.accessToken =
@@ -97,9 +94,8 @@ const map = new mapboxgl.Map({
 // Add Navigation Control
 map.addControl(new mapboxgl.NavigationControl(), "top-right");
 
-// ==========================================
 // FUNCTION: Add Markers to Map
-// ==========================================
+
 function addMarkersToMap(coffeeshopsToShow = coffeeshops) {
   // Remove existing markers
   document.querySelectorAll(".mapboxgl-marker").forEach((marker) => {
