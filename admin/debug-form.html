@@ -1,0 +1,124 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Debug Form Submission</title>
+    <style>
+      body {
+        font-family: Arial;
+        padding: 20px;
+      }
+      .result {
+        margin-top: 20px;
+        padding: 10px;
+        border: 1px solid #ccc;
+      }
+      pre {
+        background: #f0f0f0;
+        padding: 10px;
+        overflow-x: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Debug: Test Form Data Submission</h1>
+
+    <form id="testForm">
+      <div>
+        <label>Name:</label>
+        <input type="text" id="name" name="name" value="Debug Test" />
+      </div>
+      <div>
+        <label>Address:</label>
+        <textarea id="address" name="address" rows="3">
+Test Address Here</textarea
+        >
+      </div>
+      <div>
+        <label>Latitude:</label>
+        <input
+          type="number"
+          id="latitude"
+          name="latitude"
+          step="0.0001"
+          value="-6.8809"
+        />
+      </div>
+      <div>
+        <label>Longitude:</label>
+        <input
+          type="number"
+          id="longitude"
+          name="longitude"
+          step="0.0001"
+          value="107.5514"
+        />
+      </div>
+      <div>
+        <label>Rating:</label>
+        <input type="number" id="rating" name="rating" step="0.1" value="4" />
+      </div>
+      <div>
+        <label>Status:</label>
+        <select id="status" name="status">
+          <option>Aktif</option>
+          <option>Tidak Aktif</option>
+        </select>
+      </div>
+      <div>
+        <label>Phone:</label>
+        <input type="text" id="phone" name="phone" value="08175588877" />
+      </div>
+      <button type="button" onclick="submitForm()">Submit</button>
+    </form>
+
+    <div id="result" class="result" style="display: none">
+      <h3>Request Data:</h3>
+      <pre id="requestBody"></pre>
+      <h3>Response:</h3>
+      <pre id="response"></pre>
+    </div>
+
+    <script>
+      async function submitForm() {
+        const data = {
+          name: document.getElementById("name").value,
+          address: document.getElementById("address").value,
+          latitude: parseFloat(document.getElementById("latitude").value),
+          longitude: parseFloat(document.getElementById("longitude").value),
+          rating: parseFloat(document.getElementById("rating").value),
+          status: document.getElementById("status").value,
+          phone: document.getElementById("phone").value,
+        };
+
+        console.log("Sending data:", data);
+        document.getElementById("requestBody").textContent = JSON.stringify(
+          data,
+          null,
+          2,
+        );
+
+        try {
+          const response = await fetch("../backend/api/coffeeshops.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          });
+
+          const result = await response.json();
+          console.log("Response:", result);
+          document.getElementById("response").textContent = JSON.stringify(
+            result,
+            null,
+            2,
+          );
+          document.getElementById("result").style.display = "block";
+        } catch (e) {
+          console.error("Error:", e);
+          document.getElementById("response").textContent =
+            "Error: " + e.message;
+          document.getElementById("result").style.display = "block";
+        }
+      }
+    </script>
+  </body>
+</html>

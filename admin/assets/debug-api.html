@@ -1,0 +1,180 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Debug API Response</title>
+    <style>
+      body {
+        font-family: monospace;
+        padding: 20px;
+        background: #1e1e1e;
+        color: #d4d4d4;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: #252526;
+        padding: 20px;
+        border-radius: 4px;
+      }
+      button {
+        background: #007acc;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        margin: 5px;
+        border-radius: 3px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #005a9e;
+      }
+      .result {
+        background: #1e1e1e;
+        border: 1px solid #404040;
+        padding: 15px;
+        margin-top: 10px;
+        border-radius: 3px;
+        white-space: pre-wrap;
+        word-break: break-all;
+        max-height: 500px;
+        overflow-y: auto;
+      }
+      .success {
+        color: #4ec9b0;
+      }
+      .error {
+        color: #f48771;
+      }
+      .info {
+        color: #4ec9b0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🔍 API Debug Console</h1>
+
+      <div>
+        <button onclick="testRawAPI()">📡 Test Raw API (GET)</button>
+        <button onclick="testWithFetch()">🚀 Test with Fetch (GET)</button>
+        <button onclick="testPOST()">➕ Test POST</button>
+        <button onclick="clearResults()">🗑️ Clear</button>
+      </div>
+
+      <div id="results"></div>
+    </div>
+
+    <script>
+      function log(message, type = "info") {
+        const resultsDiv = document.getElementById("results");
+        const timestamp = new Date().toLocaleTimeString();
+        const span = document.createElement("div");
+        span.className = type;
+        span.textContent = `[${timestamp}] ${message}`;
+        resultsDiv.appendChild(span);
+        resultsDiv.appendChild(document.createElement("br"));
+        resultsDiv.scrollTop = resultsDiv.scrollHeight;
+      }
+
+      function clearResults() {
+        document.getElementById("results").innerHTML = "";
+      }
+
+      async function testRawAPI() {
+        clearResults();
+        log("Starting raw API test...", "info");
+
+        try {
+          const apiUrl = "../../backend/api/coffeeshops.php";
+          log(`Testing URL: ${apiUrl}`, "info");
+
+          const response = await fetch(apiUrl);
+          log(`Status: ${response.status}`, response.ok ? "success" : "error");
+          log(`Content-Type: ${response.headers.get("content-type")}`, "info");
+
+          const text = await response.text();
+          log(`Response length: ${text.length} bytes`, "info");
+
+          // Try to parse as JSON
+          try {
+            const json = JSON.parse(text);
+            log("✅ Valid JSON response!", "success");
+            log(`Response: ${JSON.stringify(json, null, 2)}`, "success");
+          } catch (e) {
+            log("❌ Invalid JSON - response is HTML or has error", "error");
+            log(`First 500 chars: ${text.substring(0, 500)}`, "error");
+          }
+        } catch (error) {
+          log(`Error: ${error.message}`, "error");
+        }
+      }
+
+      async function testWithFetch() {
+        clearResults();
+        log("Testing with standard fetch...", "info");
+
+        try {
+          const response = await fetch("../../backend/api/coffeeshops.php");
+          const data = await response.json();
+
+          if (data.success) {
+            log("✅ API Success!", "success");
+            log(`Records: ${data.data.length}`, "success");
+            log(`Response: ${JSON.stringify(data, null, 2)}`, "success");
+          } else {
+            log("❌ API returned error", "error");
+            log(`Message: ${data.message}`, "error");
+            log(`Full response: ${JSON.stringify(data, null, 2)}`, "error");
+          }
+        } catch (error) {
+          log(`Fetch error: ${error.message}`, "error");
+          log("Check API endpoint URL", "error");
+        }
+      }
+
+      async function testPOST() {
+        clearResults();
+        log("Testing POST request...", "info");
+
+        try {
+          const testData = {
+            name: "Debug Test Coffee",
+            address: "Jl. Debug, Cimahi",
+            latitude: "-7.123456",
+            longitude: "107.654321",
+            phone: "0812345678",
+            rating: 4.5,
+            status: "Aktif",
+          };
+
+          const response = await fetch("../../backend/api/coffeeshops.php", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(testData),
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            log("✅ POST Success!", "success");
+            log(`Created ID: ${data.data.id}`, "success");
+            log(`Response: ${JSON.stringify(data, null, 2)}`, "success");
+          } else {
+            log("❌ POST Failed", "error");
+            log(`Response: ${JSON.stringify(data, null, 2)}`, "error");
+          }
+        } catch (error) {
+          log(`Error: ${error.message}`, "error");
+        }
+      }
+
+      // Auto test on load
+      window.addEventListener("load", () => {
+        log("Debug console loaded", "info");
+        log("Click buttons to test API", "info");
+      });
+    </script>
+  </body>
+</html>

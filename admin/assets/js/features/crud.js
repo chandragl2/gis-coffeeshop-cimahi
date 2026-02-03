@@ -40,7 +40,7 @@ function closeEditMode() {
 // DELETE COFFEESHOP
 async function deleteCoffeeshop(id, name) {
   try {
-    const response = await fetch("../../backend/api/coffeeshops.php?id=" + id, {
+    const response = await fetch("../backend/api/coffeeshops.php?id=" + id, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
     });
@@ -133,8 +133,8 @@ if (form) {
     try {
       const method = editId ? "PUT" : "POST";
       const endpoint = editId
-        ? `../../backend/api/coffeeshops.php?id=${editId}`
-        : "../../backend/api/coffeeshops.php";
+        ? `../backend/api/coffeeshops.php?id=${editId}`
+        : "../backend/api/coffeeshops.php";
 
       const response = await fetch(endpoint, {
         method: method,

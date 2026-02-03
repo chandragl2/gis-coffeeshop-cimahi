@@ -8,16 +8,22 @@ let autoRefreshInterval = null;
 // Load data dari database
 async function loadCoffeeshopsFromDatabase() {
   try {
-    const response = await fetch("../../backend/api/coffeeshops.php");
+    console.log("📡 Fetching from: ../backend/api/coffeeshops.php");
+    const response = await fetch("../backend/api/coffeeshops.php");
+    console.log("📊 Response status:", response.status);
+
     const result = await response.json();
+    console.log("📦 API Response:", result);
 
     if (result.success && result.data && Array.isArray(result.data)) {
       allCoffeeshops = result.data;
       console.log("✅ Data loaded:", allCoffeeshops.length, "items");
       return true;
+    } else {
+      console.error("❌ API response invalid:", result);
     }
   } catch (error) {
-    console.warn("⚠️ Database error:", error);
+    console.error("❌ Fetch error:", error);
   }
   return false;
 }
@@ -25,8 +31,12 @@ async function loadCoffeeshopsFromDatabase() {
 // Update table
 function updateTable() {
   const tbody = document.querySelector(".data-table tbody");
-  if (!tbody) return;
+  if (!tbody) {
+    console.warn("⚠️ Table element not found");
+    return;
+  }
 
+  console.log("📝 Updating table with", allCoffeeshops.length, "items");
   let html = "";
   allCoffeeshops.forEach((c, i) => {
     const statusBadge =
@@ -126,13 +136,31 @@ function startAutoRefresh() {
 
 // Initialize on page load
 document.addEventListener("DOMContentLoaded", async () => {
-  await loadCoffeeshopsFromDatabase();
-  updateTable();
-  updateStats();
-  setupSearch();
+  console.log("🔄 Dashboard initializing...");
 
-  // Mulai auto-refresh
-  startAutoRefresh();
+  // Load data
+  const loaded = await loadCoffeeshopsFromDatabase();
+  if (loaded) {
+    updateTable();
+    updateStats();
+    setupSearch();
+    startAutoRefresh();
+    console.log(
+      "✅ Dashboard ready with " + allCoffeeshops.length + " coffeeshops",
+    );
+  } else {
+    console.warn("⚠️ Failed to load coffeeshops");
+    // Retry after 2 seconds
+    setTimeout(async () => {
+      const retry = await loadCoffeeshopsFromDatabase();
+      if (retry) {
+        updateTable();
+        updateStats();
+        setupSearch();
+        startAutoRefresh();
+      }
+    }, 2000);
+  }
 });
 
 console.log("🚀 Dashboard initialized!");

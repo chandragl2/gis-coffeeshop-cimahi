@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Force Refresh & Clear Cache</title>
+  </head>
+  <body>
+    <h1>Reloading...</h1>
+    <p>Clearing cache and reloading dashboard...</p>
+
+    <script>
+      // Clear all caches
+      if ("caches" in window) {
+        caches.keys().then((names) => {
+          names.forEach((name) => {
+            caches.delete(name);
+          });
+        });
+      }
+
+      // Clear localStorage if needed
+      localStorage.removeItem("dashboardCache");
+
+      // Force hard refresh
+      window.location.href = "./index.html?t=" + Date.now();
+    </script>
+  </body>
+</html>

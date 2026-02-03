@@ -97,6 +97,112 @@ body {
 /* ==========================================
    SEARCH CONTAINER
    ========================================== */
+/* ==========================================
+   FILTER CONTAINER
+   ========================================== */
+.filter-container {
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  margin-bottom: 15px;
+}
+
+.filter-container h2 {
+  font-size: 16px;
+  margin-bottom: 15px;
+  color: #6f4e37;
+  font-weight: 600;
+}
+
+/* Filter Stats */
+.filter-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.stat-card-small {
+  background: linear-gradient(135deg, #6f4e37 0%, #8b6f47 100%);
+  color: white;
+  padding: 12px;
+  border-radius: 6px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.stat-label {
+  font-size: 11px;
+  opacity: 0.9;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-count {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* Filter Inputs */
+.filter-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.filter-select,
+.filter-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 13px;
+  background-color: white;
+  color: #333;
+  transition: border-color 0.3s ease;
+}
+
+.filter-select:hover,
+.filter-input:hover {
+  border-color: #8b6f47;
+}
+
+.filter-select:focus,
+.filter-input:focus {
+  outline: none;
+  border-color: #6f4e37;
+  box-shadow: 0 0 5px rgba(107, 78, 55, 0.2);
+}
+
+.filter-select option {
+  padding: 5px;
+}
+
+.btn-filter {
+  background: linear-gradient(135deg, #6f4e37 0%, #8b6f47 100%);
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 5px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-filter:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(107, 78, 55, 0.3);
+}
+
+.btn-filter:active {
+  transform: translateY(0);
+}
+
 .search-container {
   background-color: #f9f9f9;
   padding: 15px;
@@ -104,7 +210,8 @@ body {
   border: 1px solid #e0e0e0;
 }
 
-.search-container h2 {
+.search-container h2,
+.search-container h3 {
   font-size: 16px;
   margin-bottom: 12px;
   color: #6f4e37;

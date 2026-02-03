@@ -2,6 +2,15 @@
 // MENU SWITCHING & SECTIONS
 // ==========================================
 
+// Load coffeeshop management section
+function loadCoffeeshopManagement() {
+  // Load data dan display table
+  loadCoffeeshopsFromDatabase().then(() => {
+    updateTable();
+    setupSearch();
+  });
+}
+
 function switchSection(sectionId) {
   // Hide all sections
   document.querySelectorAll(".admin-section").forEach((sec) => {

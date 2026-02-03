@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Fetch Test</title>
+  </head>
+  <body>
+    <h1>API Fetch Test</h1>
+    <div id="results"></div>
+
+    <script>
+      async function testFetch() {
+        const results = document.getElementById("results");
+
+        // Test 1: 1 level up
+        const paths = [
+          "../backend/api/coffeeshops.php",
+          "../../backend/api/coffeeshops.php",
+          "../../../backend/api/coffeeshops.php",
+          "../../../../backend/api/coffeeshops.php",
+        ];
+
+        for (const path of paths) {
+          try {
+            console.log(`Testing: ${path}`);
+            const response = await fetch(path);
+            const data = await response.json();
+
+            if (data.success) {
+              results.innerHTML += `<p style="color:green">✅ ${path} - Found ${data.data.length} items</p>`;
+            } else {
+              results.innerHTML += `<p style="color:orange">⚠️ ${path} - Invalid response</p>`;
+            }
+          } catch (e) {
+            results.innerHTML += `<p style="color:red">❌ ${path} - ${e.message}</p>`;
+          }
+        }
+      }
+
+      testFetch();
+    </script>
+  </body>
+</html>

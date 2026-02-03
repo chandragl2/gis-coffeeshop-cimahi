@@ -25,7 +25,7 @@ map.addControl(new mapboxgl.NavigationControl(), "top-right");
 // ==========================================
 async function loadCoffeeshopsFromDatabase() {
   try {
-    const response = await fetch("../../backend/api/coffeeshops.php");
+    const response = await fetch("../backend/api/coffeeshops.php");
     const result = await response.json();
 
     if (result.success && result.data && result.data.length > 0) {
@@ -234,12 +234,26 @@ map.on("load", async () => {
 
   // Load dari database
   await loadCoffeeshopsFromDatabase();
+
+  // Initialize filter and populate options
+  initializeFilter();
+  populateFilterOptions(coffeeshops);
+
   addMarkersToMap(coffeeshops);
 
   // Auto-refresh setiap 5 detik
   setInterval(async () => {
     await loadCoffeeshopsFromDatabase();
-    addMarkersToMap(coffeeshops);
+    // Only add markers if no active filter
+    const hasFilter =
+      filterState.kecamatan ||
+      filterState.kelurahan ||
+      filterState.category ||
+      filterState.search;
+    if (!hasFilter) {
+      addMarkersToMap(coffeeshops);
+      updateFilterStats();
+    }
   }, 5000);
 });
 

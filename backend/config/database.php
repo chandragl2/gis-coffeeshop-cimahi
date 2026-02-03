@@ -64,6 +64,23 @@ function close_db_connection($mysqli) {
 }
 
 // Create global connection
-$GLOBALS['db'] = get_db_connection();
+$db = get_db_connection();
+
+if (!$db) {
+    // Try to provide helpful error message
+    header('Content-Type: application/json');
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Database connection failed',
+        'error' => 'Could not connect to database on ports: ' . implode(', ', DB_PORTS),
+        'host' => DB_HOST,
+        'database' => DB_NAME
+    ]);
+    exit;
+}
+
+// Set global
+$GLOBALS['db'] = $db;
 
 ?>

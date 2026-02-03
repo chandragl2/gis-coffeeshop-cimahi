@@ -13,7 +13,8 @@ if (loginForm) {
     if (username === "admin" && password === "admin123") {
       localStorage.setItem("adminUser", JSON.stringify({ username: username }));
       alert("✅ Login berhasil!");
-      window.location.href = "index.html";
+      // Redirect ke admin index (stay in same folder)
+      window.location.href = "./index.html";
     } else {
       alert(
         "❌ Username atau password salah!\n\nUsername: admin\nPassword: admin123",
@@ -27,9 +28,14 @@ if (loginForm) {
 // Check login on dashboard page
 function checkAdminLogin() {
   const adminUser = localStorage.getItem("adminUser");
-  if (!adminUser && window.location.pathname.includes("index.html")) {
+  const isIndexPage =
+    window.location.pathname.includes("index.html") ||
+    window.location.pathname.endsWith("/admin/");
+  const isLoginPage = window.location.pathname.includes("login.html");
+
+  if (!adminUser && isIndexPage && !isLoginPage) {
     alert("⚠️ Silakan login terlebih dahulu!");
-    window.location.href = "login.html";
+    window.location.href = "./login.html";
   }
 }
 
@@ -47,7 +53,7 @@ document.querySelectorAll(".btn-logout").forEach((btn) => {
     e.preventDefault();
     if (confirm("Logout?")) {
       localStorage.removeItem("adminUser");
-      window.location.href = "login.html";
+      window.location.href = "./login.html";
     }
   });
 });

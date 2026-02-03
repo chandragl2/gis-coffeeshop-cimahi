@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+  <head>
+    <title>API Error Test</title>
+    <style>
+      body {
+        font-family: Arial;
+        padding: 20px;
+      }
+      .container {
+        max-width: 600px;
+      }
+      pre {
+        background: #f0f0f0;
+        padding: 10px;
+        overflow-x: auto;
+        margin: 10px 0;
+      }
+      .error {
+        color: red;
+      }
+      .success {
+        color: green;
+      }
+      button {
+        padding: 10px 20px;
+        margin: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>API POST Error Debug</h1>
+
+    <button onclick="testMinimalPost()">Test Minimal POST</button>
+    <button onclick="testFullPost()">Test Full POST</button>
+    <button onclick="testGet()">Test GET</button>
+
+    <div id="result"></div>
+
+    <script>
+      async function testMinimalPost() {
+        const data = {
+          name: "MinimalTest",
+          address: "Minimal Address",
+          latitude: -6.8809,
+          longitude: 107.5514,
+          rating: 4,
+          status: "Aktif",
+        };
+
+        await makeRequest("POST", data);
+      }
+
+      async function testFullPost() {
+        const data = {
+          name: "FullTest",
+          address: "Full Address Test",
+          latitude: -6.8809,
+          longitude: 107.5514,
+          rating: 4,
+          status: "Aktif",
+          phone: "08175588877",
+        };
+
+        await makeRequest("POST", data);
+      }
+
+      async function testGet() {
+        try {
+          const response = await fetch("../backend/api/coffeeshops.php");
+          const text = await response.text();
+          document.getElementById("result").innerHTML =
+            `<p class="success">Status: ${response.status}</p>
+                     <pre>${text.substring(0, 500)}</pre>`;
+        } catch (e) {
+          document.getElementById("result").innerHTML =
+            `<p class="error">Error: ${e.message}</p>`;
+        }
+      }
+
+      async function makeRequest(method, data) {
+        const result = document.getElementById("result");
+        result.innerHTML = `<p>Loading...</p>`;
+
+        try {
+          console.log("Sending:", data);
+          const response = await fetch("../backend/api/coffeeshops.php", {
+            method: method,
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
+
+          const text = await response.text();
+          console.log("Response text:", text);
+
+          try {
+            const json = JSON.parse(text);
+            result.innerHTML = `<p class="success">Status: ${response.status}</p>
+                         <pre>${JSON.stringify(json, null, 2)}</pre>`;
+          } catch (e) {
+            result.innerHTML = `<p class="error">Status: ${response.status}</p>
+                         <p class="error">JSON Parse Error:</p>
+                         <pre>${text}</pre>`;
+          }
+        } catch (e) {
+          result.innerHTML = `<p class="error">Fetch Error: ${e.message}</p>
+                     <pre>${e.stack}</pre>`;
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -31,8 +31,58 @@
     <div class="main-container">
       <!-- Sidebar - Search -->
       <aside class="sidebar">
+        <!-- Filter Section -->
+        <div class="filter-container">
+          <h2>Filter & Cari</h2>
+
+          <!-- Filter Stats -->
+          <div class="filter-stats">
+            <div class="stat-card-small">
+              <div class="stat-label">Kecamatan</div>
+              <div class="stat-count" id="statKecamatan">0</div>
+            </div>
+            <div class="stat-card-small">
+              <div class="stat-label">Kelurahan</div>
+              <div class="stat-count" id="statKelurahan">0</div>
+            </div>
+            <div class="stat-card-small">
+              <div class="stat-label">Kategori</div>
+              <div class="stat-count" id="statKategori">0</div>
+            </div>
+            <div class="stat-card-small">
+              <div class="stat-label">Coffeeshop</div>
+              <div class="stat-count" id="statCoffeeshop">0</div>
+            </div>
+          </div>
+
+          <!-- Filter Inputs -->
+          <div class="filter-inputs">
+            <select id="filterKecamatan" class="filter-select">
+              <option value="">Semua Kecamatan</option>
+            </select>
+
+            <select id="filterKelurahan" class="filter-select">
+              <option value="">Semua Kelurahan</option>
+            </select>
+
+            <select id="filterKategori" class="filter-select">
+              <option value="">Semua Kategori</option>
+            </select>
+
+            <input
+              type="text"
+              id="filterSearch"
+              class="filter-input"
+              placeholder="Cari nama..."
+            />
+
+            <button id="filterButton" class="btn-filter">FILTER</button>
+          </div>
+        </div>
+
+        <!-- Search Container (Keep for backward compatibility) -->
         <div class="search-container">
-          <h2>Cari Coffeeshop</h2>
+          <h3>Cari Coffeeshop</h3>
           <input
             type="text"
             id="searchInput"
@@ -105,6 +155,7 @@
     </div>
 
     <!-- JavaScript -->
+    <script src="assets/js/features/filter.js"></script>
     <script src="assets/js/features/map.js"></script>
   </body>
 </html>

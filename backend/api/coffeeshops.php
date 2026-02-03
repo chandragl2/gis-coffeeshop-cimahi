@@ -12,9 +12,22 @@
  *   DELETE /backend/api/coffeeshops.php (with ?id=X)
  */
 
+// Set headers first
+header('Content-Type: application/json; charset=utf-8');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+
+// Handle preflight requests
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../helpers/response.php';
 require_once __DIR__ . '/../helpers/validation.php';
+require_once __DIR__ . '/../helpers/database.php';
 
 $mysqli = $GLOBALS['db'];
 
@@ -43,15 +56,38 @@ switch ($method) {
 }
 
 // ==========================================
-// GET: Fetch all coffeeshops
+// GET: Fetch all coffeeshops with filter support
 // ==========================================
 function get_coffeeshops() {
     global $mysqli;
     
     try {
-        $query = "SELECT id, name, address, latitude, longitude, rating, status, phone, created_at 
+        $query = "SELECT id, name, address, latitude, longitude, rating, status, phone, category, kecamatan, kelurahan, description, created_at 
                   FROM coffeeshops 
-                  ORDER BY created_at DESC";
+                  WHERE 1=1";
+        
+        // Apply filters
+        if (!empty($_GET['kecamatan'])) {
+            $kecamatan = $mysqli->real_escape_string($_GET['kecamatan']);
+            $query .= " AND kecamatan = '$kecamatan'";
+        }
+        
+        if (!empty($_GET['kelurahan'])) {
+            $kelurahan = $mysqli->real_escape_string($_GET['kelurahan']);
+            $query .= " AND kelurahan = '$kelurahan'";
+        }
+        
+        if (!empty($_GET['category'])) {
+            $category = $mysqli->real_escape_string($_GET['category']);
+            $query .= " AND category = '$category'";
+        }
+        
+        if (!empty($_GET['search'])) {
+            $search = $mysqli->real_escape_string($_GET['search']);
+            $query .= " AND name LIKE '%$search%'";
+        }
+        
+        $query .= " ORDER BY created_at DESC";
         
         $result = $mysqli->query($query);
         
@@ -80,44 +116,57 @@ function get_coffeeshops() {
 function add_coffeeshop() {
     global $mysqli;
     
-    $input = json_decode(file_get_contents("php://input"), true);
-    
-    // Validate input
-    $validation = validate_coffeeshop_data($input);
-    if (!$validation['valid']) {
-        error(implode(', ', $validation['errors']), null, 400);
-    }
-    
     try {
+        // Decode input
+        $input = json_decode(file_get_contents("php://input"), true);
+        
+        if (!$input) {
+            throw new Exception('Invalid JSON input');
+        }
+        
+        // Prepare and validate data
+        $data = prepare_coffeeshop_data($input);
+        $validation = validate_prepared_data($data);
+        
+        if (!$validation['valid']) {
+            log_db_operation('INSERT', 'coffeeshops', $data, 'warning');
+            error(implode(', ', $validation['errors']), null, 400);
+        }
+        
+        // Also validate using existing validation function
+        $validation2 = validate_coffeeshop_data($input);
+        if (!$validation2['valid']) {
+            error(implode(', ', $validation2['errors']), null, 400);
+        }
+        
+        // Prepare statement
         $stmt = $mysqli->prepare(
-            "INSERT INTO coffeeshops (name, address, latitude, longitude, rating, status, phone) 
-             VALUES (?, ?, ?, ?, ?, ?, ?)"
+            "INSERT INTO coffeeshops (name, address, latitude, longitude, rating, status, phone, category, kecamatan, kelurahan, description) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
         );
         
         if (!$stmt) {
-            error('Prepare failed: ' . $mysqli->error, null, 500);
+            throw new Exception('Prepare failed: ' . $mysqli->error);
         }
         
-        $name = sanitize_input($input['name']);
-        $address = sanitize_input($input['address']);
-        $latitude = floatval($input['latitude']);
-        $longitude = floatval($input['longitude']);
-        $rating = floatval($input['rating']);
-        $status = sanitize_input($input['status']);
-        $phone = isset($input['phone']) ? sanitize_input($input['phone']) : null;
+        // Use safe bind param with ordered fields
+        $order = ['name', 'address', 'latitude', 'longitude', 'rating', 'status', 'phone', 'category', 'kecamatan', 'kelurahan', 'description'];
+        $params = generate_bind_params($data, $order);
         
-        $stmt->bind_param('sdddiss', $name, $address, $latitude, $longitude, $rating, $status, $phone);
+        $stmt->bind_param($params['types'], ...$params['values']);
         
-        if (!$stmt->execute()) {
-            error('Execute failed: ' . $stmt->error, null, 500);
-        }
+        // Execute safely
+        safe_execute($stmt);
         
         $new_id = $mysqli->insert_id;
         $stmt->close();
         
+        log_db_operation('INSERT', 'coffeeshops', array_merge($data, ['id' => $new_id]), 'info');
+        
         created(['id' => $new_id], 'Coffeeshop added successfully');
         
     } catch (Exception $e) {
+        error_log("Error in add_coffeeshop: " . $e->getMessage());
         error('Error: ' . $e->getMessage(), null, 500);
     }
 }
@@ -128,54 +177,71 @@ function add_coffeeshop() {
 function edit_coffeeshop() {
     global $mysqli;
     
-    $id = isset($_GET['id']) ? intval($_GET['id']) : null;
-    
-    if (!$id) {
-        error('ID parameter required', null, 400);
-    }
-    
-    $input = json_decode(file_get_contents("php://input"), true);
-    
-    // Validate input
-    $validation = validate_coffeeshop_data($input);
-    if (!$validation['valid']) {
-        error(implode(', ', $validation['errors']), null, 400);
-    }
-    
     try {
+        // Get ID from query parameter
+        $id = isset($_GET['id']) ? intval($_GET['id']) : null;
+        
+        if (!$id) {
+            error('ID parameter required', null, 400);
+        }
+        
+        // Decode input
+        $input = json_decode(file_get_contents("php://input"), true);
+        
+        if (!$input) {
+            throw new Exception('Invalid JSON input');
+        }
+        
+        // Prepare and validate data
+        $data = prepare_coffeeshop_data($input);
+        $validation = validate_prepared_data($data);
+        
+        if (!$validation['valid']) {
+            log_db_operation('UPDATE', 'coffeeshops', array_merge($data, ['id' => $id]), 'warning');
+            error(implode(', ', $validation['errors']), null, 400);
+        }
+        
+        // Also validate using existing validation function
+        $validation2 = validate_coffeeshop_data($input);
+        if (!$validation2['valid']) {
+            error(implode(', ', $validation2['errors']), null, 400);
+        }
+        
+        // Prepare statement
         $stmt = $mysqli->prepare(
             "UPDATE coffeeshops 
-             SET name = ?, address = ?, latitude = ?, longitude = ?, rating = ?, status = ?, phone = ? 
+             SET name = ?, address = ?, latitude = ?, longitude = ?, rating = ?, status = ?, phone = ?, category = ?, kecamatan = ?, kelurahan = ?, description = ? 
              WHERE id = ?"
         );
         
         if (!$stmt) {
-            error('Prepare failed: ' . $mysqli->error, null, 500);
+            throw new Exception('Prepare failed: ' . $mysqli->error);
         }
         
-        $name = sanitize_input($input['name']);
-        $address = sanitize_input($input['address']);
-        $latitude = floatval($input['latitude']);
-        $longitude = floatval($input['longitude']);
-        $rating = floatval($input['rating']);
-        $status = sanitize_input($input['status']);
-        $phone = isset($input['phone']) ? sanitize_input($input['phone']) : null;
+        // Use safe bind param with ordered fields (include id at the end)
+        $order = ['name', 'address', 'latitude', 'longitude', 'rating', 'status', 'phone', 'category', 'kecamatan', 'kelurahan', 'description'];
+        $params = generate_bind_params($data, $order);
+        $params['types'] .= 'i'; // Add integer type for id
+        $params['values'][] = $id; // Add id to values
         
-        $stmt->bind_param('sdddssi', $name, $address, $latitude, $longitude, $rating, $status, $phone, $id);
+        $stmt->bind_param($params['types'], ...$params['values']);
         
-        if (!$stmt->execute()) {
-            error('Execute failed: ' . $stmt->error, null, 500);
-        }
+        // Execute safely
+        safe_execute($stmt);
         
         if ($stmt->affected_rows === 0) {
+            $stmt->close();
             error('No coffeeshop found with that ID', null, 404);
         }
         
         $stmt->close();
         
+        log_db_operation('UPDATE', 'coffeeshops', array_merge($data, ['id' => $id]), 'info');
+        
         success(['id' => $id], 'Coffeeshop updated successfully');
         
     } catch (Exception $e) {
+        error_log("Error in edit_coffeeshop: " . $e->getMessage());
         error('Error: ' . $e->getMessage(), null, 500);
     }
 }
@@ -186,34 +252,40 @@ function edit_coffeeshop() {
 function delete_coffeeshop() {
     global $mysqli;
     
-    $id = isset($_GET['id']) ? intval($_GET['id']) : null;
-    
-    if (!$id) {
-        error('ID parameter required', null, 400);
-    }
-    
     try {
+        // Get ID from query parameter
+        $id = isset($_GET['id']) ? intval($_GET['id']) : null;
+        
+        if (!$id) {
+            error('ID parameter required', null, 400);
+        }
+        
+        // Prepare statement
         $stmt = $mysqli->prepare("DELETE FROM coffeeshops WHERE id = ?");
         
         if (!$stmt) {
-            error('Prepare failed: ' . $mysqli->error, null, 500);
+            throw new Exception('Prepare failed: ' . $mysqli->error);
         }
         
+        // Bind parameter safely
         $stmt->bind_param('i', $id);
         
-        if (!$stmt->execute()) {
-            error('Execute failed: ' . $stmt->error, null, 500);
-        }
+        // Execute safely
+        safe_execute($stmt);
         
         if ($stmt->affected_rows === 0) {
+            $stmt->close();
             error('No coffeeshop found with that ID', null, 404);
         }
         
         $stmt->close();
         
+        log_db_operation('DELETE', 'coffeeshops', ['id' => $id], 'info');
+        
         success(['id' => $id], 'Coffeeshop deleted successfully');
         
     } catch (Exception $e) {
+        error_log("Error in delete_coffeeshop: " . $e->getMessage());
         error('Error: ' . $e->getMessage(), null, 500);
     }
 }

@@ -1,0 +1,126 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Dashboard Test - Direct Data Load</title>
+    <style>
+      body {
+        font-family: Arial;
+        padding: 20px;
+      }
+      .console {
+        background: #1e1e1e;
+        color: #00ff00;
+        padding: 15px;
+        border-radius: 4px;
+        font-family: monospace;
+        max-height: 400px;
+        overflow-y: auto;
+        margin: 10px 0;
+      }
+      button {
+        background: #0078d4;
+        color: white;
+        padding: 10px 20px;
+        margin: 5px;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+      }
+      .success {
+        color: #4ec9b0;
+      }
+      .error {
+        color: #f48771;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🧪 Dashboard Data Load Test</h1>
+
+    <div>
+      <button onclick="testDirectLoad()">Test Direct Load</button>
+      <button onclick="testTable()">Test Table Render</button>
+      <button onclick="testMenuClick()">Simulate Menu Click</button>
+    </div>
+
+    <div class="console" id="console"></div>
+
+    <h2>Expected HTML Structure:</h2>
+    <pre><code>&lt;section id="coffeeshop-section"&gt;
+  &lt;table class="data-table"&gt;
+    &lt;tbody&gt;
+      &lt;!-- data here --&gt;
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+&lt;/section&gt;</code></pre>
+
+    <script>
+      function log(msg, type = "info") {
+        const c = document.getElementById("console");
+        const line = document.createElement("div");
+        line.className = type;
+        line.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+        c.appendChild(line);
+        c.scrollTop = c.scrollHeight;
+      }
+
+      async function testDirectLoad() {
+        log("Fetching data from API...");
+        try {
+          const response = await fetch("../../backend/api/coffeeshops.php");
+          log(`Response status: ${response.status}`, "success");
+
+          const data = await response.json();
+          log(`Data received: ${data.data.length} items`, "success");
+
+          if (data.data && data.data.length > 0) {
+            log(`First item: ${data.data[0].name}`, "success");
+          }
+        } catch (e) {
+          log(`Error: ${e.message}`, "error");
+        }
+      }
+
+      function testTable() {
+        log("Checking table structure...");
+
+        const tbody = document.querySelector(".data-table tbody");
+        if (tbody) {
+          log("✓ Table tbody found", "success");
+          log(`  Current rows: ${tbody.querySelectorAll("tr").length}`);
+        } else {
+          log("✗ Table tbody NOT found", "error");
+        }
+
+        const section = document.getElementById("coffeeshop-section");
+        if (section) {
+          log("✓ Coffeeshop section found", "success");
+        } else {
+          log("✗ Coffeeshop section NOT found", "error");
+        }
+      }
+
+      function testMenuClick() {
+        log("Simulating menu click...");
+
+        // Check if functions exist
+        if (typeof loadCoffeeshopManagement === "function") {
+          log("✓ loadCoffeeshopManagement function exists", "success");
+          loadCoffeeshopManagement().then(() => {
+            log("✓ Menu function executed", "success");
+          });
+        } else {
+          log("✗ loadCoffeeshopManagement NOT defined", "error");
+        }
+
+        if (typeof switchSection === "function") {
+          log("✓ switchSection function exists", "success");
+        } else {
+          log("✗ switchSection NOT defined", "error");
+        }
+      }
+
+      log("Test page loaded - click buttons to test", "success");
+    </script>
+  </body>
+</html>
