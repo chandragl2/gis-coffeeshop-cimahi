@@ -1,0 +1,318 @@
+<!doctype html>
+<html>
+  <head>
+    <title>API Test - CoffeeshopCimahi</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background: #f5f5f5;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        color: #333;
+        border-bottom: 2px solid #8b4513;
+        padding-bottom: 10px;
+      }
+      .test-box {
+        margin: 20px 0;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background: #fafafa;
+      }
+      button {
+        background: #8b4513;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin: 5px;
+      }
+      button:hover {
+        background: #6d3410;
+      }
+      .result {
+        margin-top: 10px;
+        padding: 10px;
+        border-radius: 4px;
+        font-family: monospace;
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
+      .success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+      .error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+      .loading {
+        background: #cfe2ff;
+        color: #084298;
+        border: 1px solid #b6d4fe;
+      }
+      h3 {
+        margin-top: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🧪 API Verification Tests</h1>
+      <p>
+        Test the CoffeeshopCimahi API endpoints to ensure everything is working
+        correctly.
+      </p>
+
+      <div class="test-box">
+        <h3>1. Test GET API (Fetch All Coffeeshops)</h3>
+        <button onclick="testGetAPI()">Run GET Test</button>
+        <div id="getResult"></div>
+      </div>
+
+      <div class="test-box">
+        <h3>2. Test POST API (Add Coffeeshop)</h3>
+        <p>Creates a test coffeeshop</p>
+        <button onclick="testPostAPI()">Run POST Test</button>
+        <div id="postResult"></div>
+      </div>
+
+      <div class="test-box">
+        <h3>3. Test PUT API (Update Coffeeshop)</h3>
+        <p>Updates the test coffeeshop (requires existing ID)</p>
+        <button onclick="testPutAPI()">Run PUT Test</button>
+        <div id="putResult"></div>
+      </div>
+
+      <div class="test-box">
+        <h3>4. Test DELETE API (Delete Coffeeshop)</h3>
+        <p>Deletes the test coffeeshop (requires existing ID)</p>
+        <button onclick="testDeleteAPI()">Run DELETE Test</button>
+        <div id="deleteResult"></div>
+      </div>
+
+      <div class="test-box">
+        <h3>5. Run All Tests</h3>
+        <button onclick="runAllTests()">Run All Tests Sequentially</button>
+        <div id="allResults"></div>
+      </div>
+    </div>
+
+    <script>
+      const API_URL = "../../backend/api/coffeeshops.php";
+      let testCoffeeshopId = null;
+
+      function showResult(elementId, message, isSuccess = true) {
+        const element = document.getElementById(elementId);
+        element.innerHTML = `<div class="result ${isSuccess ? "success" : "error"}">${message}</div>`;
+      }
+
+      function showLoading(elementId, message = "Loading...") {
+        const element = document.getElementById(elementId);
+        element.innerHTML = `<div class="result loading">${message}</div>`;
+      }
+
+      async function testGetAPI() {
+        showLoading("getResult", "Fetching coffeeshops...");
+        try {
+          const response = await fetch(API_URL);
+          const data = await response.json();
+
+          if (response.ok) {
+            showResult(
+              "getResult",
+              `✅ GET API Works!\nStatus: ${response.status}\nCoffeeshops found: ${data.data?.length || 0}\n\nResponse:\n${JSON.stringify(data, null, 2)}`,
+              true,
+            );
+          } else {
+            showResult(
+              "getResult",
+              `❌ GET API Error!\nStatus: ${response.status}\n${JSON.stringify(data, null, 2)}`,
+              false,
+            );
+          }
+        } catch (error) {
+          showResult("getResult", `❌ Error: ${error.message}`, false);
+        }
+      }
+
+      async function testPostAPI() {
+        showLoading("postResult", "Creating test coffeeshop...");
+        const testData = {
+          name: "Test Coffeeshop API",
+          address: "Jl. Test API, Cimahi",
+          latitude: "-7.123456",
+          longitude: "107.654321",
+          phone: "08123456789",
+          rating: 4.5,
+          status: "Aktif",
+        };
+
+        try {
+          const response = await fetch(API_URL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(testData),
+          });
+
+          const data = await response.json();
+
+          if (response.ok && data.data?.id) {
+            testCoffeeshopId = data.data.id;
+            showResult(
+              "postResult",
+              `✅ POST API Works!\nStatus: ${response.status}\nCreated ID: ${testCoffeeshopId}\n\nResponse:\n${JSON.stringify(data, null, 2)}`,
+              true,
+            );
+          } else {
+            showResult(
+              "postResult",
+              `❌ POST API Error!\nStatus: ${response.status}\n${JSON.stringify(data, null, 2)}`,
+              false,
+            );
+          }
+        } catch (error) {
+          showResult("postResult", `❌ Error: ${error.message}`, false);
+        }
+      }
+
+      async function testPutAPI() {
+        if (!testCoffeeshopId) {
+          showResult(
+            "putResult",
+            `❌ No test coffeeshop ID. Run POST test first!`,
+            false,
+          );
+          return;
+        }
+
+        showLoading(
+          "putResult",
+          `Updating coffeeshop ID ${testCoffeeshopId}...`,
+        );
+        const updateData = {
+          name: "Test Coffeeshop API - Updated",
+          rating: 4.8,
+        };
+
+        try {
+          const response = await fetch(API_URL + "?id=" + testCoffeeshopId, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(updateData),
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            showResult(
+              "putResult",
+              `✅ PUT API Works!\nStatus: ${response.status}\nUpdated ID: ${testCoffeeshopId}\n\nResponse:\n${JSON.stringify(data, null, 2)}`,
+              true,
+            );
+          } else {
+            showResult(
+              "putResult",
+              `❌ PUT API Error!\nStatus: ${response.status}\n${JSON.stringify(data, null, 2)}`,
+              false,
+            );
+          }
+        } catch (error) {
+          showResult("putResult", `❌ Error: ${error.message}`, false);
+        }
+      }
+
+      async function testDeleteAPI() {
+        if (!testCoffeeshopId) {
+          showResult(
+            "deleteResult",
+            `❌ No test coffeeshop ID. Run POST test first!`,
+            false,
+          );
+          return;
+        }
+
+        showLoading(
+          "deleteResult",
+          `Deleting coffeeshop ID ${testCoffeeshopId}...`,
+        );
+
+        try {
+          const response = await fetch(API_URL + "?id=" + testCoffeeshopId, {
+            method: "DELETE",
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            showResult(
+              "deleteResult",
+              `✅ DELETE API Works!\nStatus: ${response.status}\nDeleted ID: ${testCoffeeshopId}\n\nResponse:\n${JSON.stringify(data, null, 2)}`,
+              true,
+            );
+            testCoffeeshopId = null;
+          } else {
+            showResult(
+              "deleteResult",
+              `❌ DELETE API Error!\nStatus: ${response.status}\n${JSON.stringify(data, null, 2)}`,
+              false,
+            );
+          }
+        } catch (error) {
+          showResult("deleteResult", `❌ Error: ${error.message}`, false);
+        }
+      }
+
+      async function runAllTests() {
+        const allResults = document.getElementById("allResults");
+        allResults.innerHTML =
+          '<div class="result loading">Running all tests...</div>';
+
+        allResults.innerHTML =
+          '<div class="result loading">1. Testing GET API...</div>';
+        await new Promise((r) => setTimeout(r, 500));
+        await testGetAPI();
+
+        allResults.innerHTML =
+          '<div class="result loading">2. Testing POST API...</div>';
+        await new Promise((r) => setTimeout(r, 500));
+        await testPostAPI();
+
+        allResults.innerHTML =
+          '<div class="result loading">3. Testing PUT API...</div>';
+        await new Promise((r) => setTimeout(r, 500));
+        await testPutAPI();
+
+        allResults.innerHTML =
+          '<div class="result loading">4. Testing DELETE API...</div>';
+        await new Promise((r) => setTimeout(r, 500));
+        await testDeleteAPI();
+
+        allResults.innerHTML =
+          '<div class="result success">✅ All tests completed! Check individual test sections for results.</div>';
+      }
+
+      // Show info on load
+      window.addEventListener("load", () => {
+        console.log("API Test Page Loaded");
+        console.log("API URL:", API_URL);
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Admin - GIS Coffeeshop Cimahi</title>
+    <link rel="stylesheet" href="assets/css/main.css" />
+  </head>
+  <body class="admin-page">
+    <!-- Admin Navbar -->
+    <nav class="admin-navbar">
+      <div class="admin-navbar-container">
+        <h1 class="navbar-title">☕ GIS Coffeeshop - Dashboard Admin</h1>
+        <div class="navbar-buttons">
+          <span class="admin-user">👤 Admin</span>
+          <a href="login.html" class="btn-logout">Logout</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Admin Container -->
+    <div class="admin-container">
+      <!-- Sidebar -->
+      <aside class="admin-sidebar">
+        <div class="sidebar-menu">
+          <h3>Menu</h3>
+          <ul>
+            <li>
+              <a href="#" class="menu-item active" data-menu="dashboard"
+                >📊 Dashboard</a
+              >
+            </li>
+            <li>
+              <a href="#" class="menu-item" data-menu="coffeeshop"
+                >☕ Coffeeshop</a
+              >
+            </li>
+            <li>
+              <a href="#" class="menu-item" data-menu="laporan">📝 Laporan</a>
+            </li>
+            <li>
+              <a href="#" class="menu-item" data-menu="pengaturan"
+                >⚙️ Pengaturan</a
+              >
+            </li>
+          </ul>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="admin-content">
+        <!-- SECTION: Dashboard -->
+        <section
+          id="dashboard-section"
+          class="admin-section"
+          style="display: block"
+        >
+          <div class="admin-header">
+            <h2>📊 Dashboard Coffeeshop Kota Cimahi</h2>
+          </div>
+
+          <div class="stats-container">
+            <div class="stat-card">
+              <div class="stat-icon">☕</div>
+              <div class="stat-content">
+                <h4>Total Coffeeshop</h4>
+                <p class="stat-value">0</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">📍</div>
+              <div class="stat-content">
+                <h4>Lokasi Terdaftar</h4>
+                <p class="stat-value">0</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">⭐</div>
+              <div class="stat-content">
+                <h4>Rating Tertinggi</h4>
+                <p class="stat-value">0</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">✅</div>
+              <div class="stat-content">
+                <h4>Status Aktif</h4>
+                <p class="stat-value">-</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-section">
+            <div class="table-header">
+              <h3>Daftar Semua Coffeeshop</h3>
+              <button class="btn-add-new">+ Tambah Coffeeshop</button>
+            </div>
+
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Nama Coffeeshop</th>
+                    <th>Alamat</th>
+                    <th>Koordinat</th>
+                    <th>Rating</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Data akan dimuat dari database -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION: Coffeeshop Management -->
+        <section
+          id="coffeeshop-section"
+          class="admin-section"
+          style="display: none"
+        >
+          <div class="admin-header">
+            <h2>☕ Manajemen Coffeeshop</h2>
+          </div>
+
+          <div class="coffeeshop-management">
+            <div class="management-toolbar">
+              <button class="btn-add-new" style="margin-bottom: 15px">
+                ➕ Tambah Coffeeshop Baru
+              </button>
+              <input
+                type="text"
+                id="searchCoffeeshop"
+                placeholder="🔍 Cari coffeeshop..."
+                style="
+                  padding: 10px;
+                  margin-left: 10px;
+                  border: 1px solid #ddd;
+                  border-radius: 4px;
+                  width: 250px;
+                "
+              />
+            </div>
+
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Nama Coffeeshop</th>
+                    <th>Alamat</th>
+                    <th>Rating</th>
+                    <th>Status</th>
+                    <th>Telepon</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Data akan dimuat dari database -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION: Laporan -->
+        <section
+          id="laporan-section"
+          class="admin-section"
+          style="display: none"
+        >
+          <div class="admin-header">
+            <h2>📝 Laporan & Statistik</h2>
+          </div>
+
+          <div class="laporan-container">
+            <div id="laporan-content"></div>
+          </div>
+        </section>
+
+        <!-- SECTION: Pengaturan -->
+        <section
+          id="pengaturan-section"
+          class="admin-section"
+          style="display: none"
+        >
+          <div class="admin-header">
+            <h2>⚙️ Pengaturan Sistem</h2>
+          </div>
+
+          <div class="pengaturan-container">
+            <div class="tab-navigation">
+              <button class="tab-btn active" onclick="switchTab('profile')">
+                👤 Profil Admin
+              </button>
+              <button class="tab-btn" onclick="switchTab('backup')">
+                💾 Backup & Restore
+              </button>
+              <button class="tab-btn" onclick="switchTab('sistem')">
+                ℹ️ Informasi Sistem
+              </button>
+            </div>
+
+            <!-- Tab 1: Profil Admin -->
+            <div id="tab-profile" class="tab-content" style="display: block">
+              <div class="settings-form">
+                <h3>Ubah Profil Admin</h3>
+                <form>
+                  <div class="form-group-admin">
+                    <label for="adminUsername">Username:</label>
+                    <input
+                      type="text"
+                      id="adminUsername"
+                      value="admin"
+                      disabled
+                    />
+                  </div>
+                  <div class="form-group-admin">
+                    <label for="adminEmail">Email:</label>
+                    <input
+                      type="email"
+                      id="adminEmail"
+                      placeholder="admin@coffeeshop.local"
+                      value=""
+                    />
+                  </div>
+                  <div class="form-group-admin">
+                    <label for="adminPassword">Password Baru:</label>
+                    <input
+                      type="password"
+                      id="adminPassword"
+                      placeholder="Kosongkan jika tidak ingin mengubah"
+                    />
+                  </div>
+                  <div class="form-actions">
+                    <button
+                      type="button"
+                      class="btn-submit"
+                      onclick="updateProfile()"
+                    >
+                      💾 Simpan Perubahan
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <!-- Tab 2: Backup & Restore -->
+            <div id="tab-backup" class="tab-content" style="display: none">
+              <div class="settings-form">
+                <h3>Backup Database</h3>
+                <p style="color: #666; margin-bottom: 15px">
+                  Download backup database dalam format JSON
+                </p>
+                <button class="btn-submit" onclick="backupDatabase()">
+                  📥 Download Backup
+                </button>
+
+                <hr
+                  style="
+                    margin: 30px 0;
+                    border: none;
+                    border-top: 1px solid #ddd;
+                  "
+                />
+
+                <h3>Restore Database</h3>
+                <p style="color: #666; margin-bottom: 15px">
+                  Upload file backup JSON untuk restore data
+                </p>
+                <div class="form-group-admin">
+                  <input type="file" id="restoreFile" accept=".json" />
+                  <button
+                    class="btn-submit"
+                    onclick="restoreDatabase()"
+                    style="margin-top: 10px"
+                  >
+                    📤 Upload & Restore
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab 3: Informasi Sistem -->
+            <div id="tab-sistem" class="tab-content" style="display: none">
+              <div class="settings-form">
+                <h3>Informasi Sistem</h3>
+                <table style="width: 100%; border-collapse: collapse">
+                  <tr style="border-bottom: 1px solid #ddd">
+                    <td style="padding: 10px; font-weight: bold">Aplikasi:</td>
+                    <td style="padding: 10px">GIS Coffeeshop Cimahi</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #ddd">
+                    <td style="padding: 10px; font-weight: bold">Versi:</td>
+                    <td style="padding: 10px">1.0.0</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #ddd">
+                    <td style="padding: 10px; font-weight: bold">Database:</td>
+                    <td style="padding: 10px">gis_coffeeshop (MySQL)</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #ddd">
+                    <td style="padding: 10px; font-weight: bold">
+                      Total Record:
+                    </td>
+                    <td style="padding: 10px" id="totalRecords">0</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #ddd">
+                    <td style="padding: 10px; font-weight: bold">
+                      Environment:
+                    </td>
+                    <td style="padding: 10px">Development</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 10px; font-weight: bold">
+                      Last Updated:
+                    </td>
+                    <td style="padding: 10px" id="lastUpdated">-</td>
+                  </tr>
+                </table>
+
+                <div style="margin-top: 20px">
+                  <button class="btn-submit" onclick="refreshDatabaseInfo()">
+                    🔄 Refresh Info
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- Modal Tambah Coffeeshop -->
+    <div id="addCoffeeshopModal" class="modal-add-coffeeshop">
+      <div class="modal-add-coffeeshop-content">
+        <div class="modal-add-coffeeshop-header">
+          <h2>Tambah Coffeeshop Baru</h2>
+          <button class="close-modal-btn">&times;</button>
+        </div>
+
+        <form id="addCoffeeshopForm" class="add-coffeeshop-form">
+          <div class="form-group-admin">
+            <label for="coffeeshopName">Nama Coffeeshop *</label>
+            <input
+              type="text"
+              id="coffeeshopName"
+              name="name"
+              placeholder="Contoh: Kopi Bersaudara"
+              required
+            />
+          </div>
+
+          <div class="form-group-admin">
+            <label for="coffeeshopAddress">Alamat *</label>
+            <textarea
+              id="coffeeshopAddress"
+              name="address"
+              placeholder="Contoh: Jl. Pendidikan No. 45, Cimahi"
+              rows="3"
+              required
+            ></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group-admin">
+              <label for="coffeeshopLat">Koordinat Latitude *</label>
+              <input
+                type="number"
+                id="coffeeshopLat"
+                name="latitude"
+                step="0.0001"
+                placeholder="Contoh: -6.8886"
+                required
+              />
+            </div>
+
+            <div class="form-group-admin">
+              <label for="coffeeshopLng">Koordinat Longitude *</label>
+              <input
+                type="number"
+                id="coffeeshopLng"
+                name="longitude"
+                step="0.0001"
+                placeholder="Contoh: 107.5570"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group-admin">
+              <label for="coffeeshopRating">Rating (0-5) *</label>
+              <input
+                type="number"
+                id="coffeeshopRating"
+                name="rating"
+                min="0"
+                max="5"
+                step="0.1"
+                placeholder="Contoh: 4.5"
+                required
+              />
+            </div>
+
+            <div class="form-group-admin">
+              <label for="coffeeshopStatus">Status *</label>
+              <select id="coffeeshopStatus" name="status" required>
+                <option value="">-- Pilih Status --</option>
+                <option value="Aktif">Aktif</option>
+                <option value="Tidak Aktif">Tidak Aktif</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group-admin">
+            <label for="coffeeshopPhone">No. Telepon (Opsional)</label>
+            <input
+              type="text"
+              id="coffeeshopPhone"
+              name="phone"
+              placeholder="Contoh: 0271-123456"
+            />
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-submit">
+              💾 Simpan Coffeeshop
+            </button>
+            <button type="button" class="btn-cancel">❌ Batal</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="assets/js/core/auth.js"></script>
+    <script src="assets/js/core/dashboard.js"></script>
+    <script src="assets/js/features/menu.js"></script>
+    <script src="assets/js/features/crud.js"></script>
+    <script src="assets/js/features/laporan.js"></script>
+  </body>
+</html>

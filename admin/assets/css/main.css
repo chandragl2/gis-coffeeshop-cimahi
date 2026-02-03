@@ -1,3 +1,6 @@
+/* CSS Style - Copied from root style.css */
+/* This is the same CSS for both public and admin sections */
+
 /* ==========================================
    GENERAL STYLES
    ========================================== */
@@ -221,12 +224,10 @@ body {
 /* ==========================================
    MARKER TOOLTIP STYLES
    ========================================== */
-/* Marker hover effect - shadow saja */
 .mapboxgl-marker:hover {
   filter: drop-shadow(0 0 8px rgba(111, 78, 55, 0.3));
 }
 
-/* Tooltip yang dibuat dengan JavaScript */
 .marker-tooltip {
   animation: tooltipFadeIn 0.2s ease;
 }
@@ -240,16 +241,6 @@ body {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-/* ==========================================
-   LEGEND CONTAINER
-   ========================================== */
-.legend-container {
-  background-color: #f9f9f9;
-  padding: 15px;
-  border-radius: 8px;
-  border: 1px solid #e0e0e0;
 }
 
 /* ==========================================
@@ -376,71 +367,6 @@ body {
 
 .popup-content strong {
   color: #333;
-}
-
-/* ==========================================
-   RESPONSIVE DESIGN
-   ========================================== */
-@media (max-width: 768px) {
-  .main-container {
-    flex-direction: column;
-  }
-
-  .sidebar {
-    width: 100%;
-    height: auto;
-    max-height: 250px;
-    padding: 15px;
-    gap: 10px;
-  }
-
-  .map-container {
-    height: 300px;
-  }
-
-  .navbar-title {
-    font-size: 18px;
-  }
-
-  .navbar-container {
-    padding: 0 10px;
-  }
-
-  .search-container,
-  .info-container,
-  .legend-container {
-    padding: 10px;
-  }
-
-  .modal-content {
-    margin: 30% auto;
-    max-width: 90%;
-  }
-}
-
-@media (max-width: 480px) {
-  .navbar-title {
-    font-size: 16px;
-  }
-
-  .sidebar {
-    max-height: 200px;
-  }
-
-  .map-container {
-    height: 250px;
-  }
-
-  .btn-about,
-  .btn-admin {
-    padding: 8px 15px;
-    font-size: 12px;
-  }
-
-  .modal-content {
-    padding: 20px;
-    margin: 40% auto;
-  }
 }
 
 /* ==========================================
@@ -884,6 +810,15 @@ body {
   font-weight: 600;
 }
 
+.badge-inactive {
+  background-color: #e74c3c;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .btn-edit,
 .btn-delete {
   background: none;
@@ -939,8 +874,469 @@ body {
   font-weight: bold;
 }
 
-/* Responsive Admin */
+/* ==========================================
+   MODAL TAMBAH COFFEESHOP
+   ========================================== */
+.modal-add-coffeeshop {
+  display: none;
+  position: fixed;
+  z-index: 1001;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  overflow-y: auto;
+  animation: fadeInModal 0.3s ease;
+}
+
+@keyframes fadeInModal {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-add-coffeeshop.active {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-add-coffeeshop-content {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideInModal 0.3s ease;
+}
+
+@keyframes slideInModal {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-add-coffeeshop-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 2px solid #ecf0f1;
+  background-color: #34495e;
+}
+
+.modal-add-coffeeshop-header h2 {
+  margin: 0;
+  color: white;
+  font-size: 22px;
+}
+
+.close-modal-btn {
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: white;
+  transition: color 0.3s ease;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-modal-btn:hover {
+  color: #e74c3c;
+}
+
+.add-coffeeshop-form {
+  padding: 25px;
+}
+
+.form-group-admin {
+  margin-bottom: 18px;
+}
+
+.form-group-admin label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 14px;
+}
+
+.form-group-admin input[type="text"],
+.form-group-admin input[type="email"],
+.form-group-admin input[type="number"],
+.form-group-admin textarea,
+.form-group-admin select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #bdc3c7;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  transition: all 0.3s ease;
+}
+
+.form-group-admin input[type="text"]:focus,
+.form-group-admin input[type="email"]:focus,
+.form-group-admin input[type="number"]:focus,
+.form-group-admin textarea:focus,
+.form-group-admin select:focus {
+  outline: none;
+  border-color: #6f4e37;
+  box-shadow: 0 0 8px rgba(111, 78, 55, 0.2);
+}
+
+.form-group-admin textarea {
+  resize: vertical;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid #ecf0f1;
+}
+
+.btn-submit {
+  flex: 1;
+  padding: 12px 20px;
+  background-color: #27ae60;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-submit:hover {
+  background-color: #229954;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+}
+
+.btn-submit:active {
+  transform: translateY(0);
+}
+
+.btn-cancel {
+  flex: 1;
+  padding: 12px 20px;
+  background-color: #95a5a6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+  background-color: #7f8c8d;
+  transform: translateY(-2px);
+}
+
+.btn-cancel:active {
+  transform: translateY(0);
+}
+
+/* Loading & Success Messages */
+.form-message {
+  padding: 12px 15px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-message.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.form-message.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.form-message.loading {
+  background-color: #d1ecf1;
+  color: #0c5460;
+  border: 1px solid #bee5eb;
+}
+
+/* ==========================================
+   ADMIN SECTIONS & TABS
+   ========================================== */
+.admin-section {
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+
+.admin-section[style*="display: block"] {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Tab Navigation */
+.tab-navigation {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 0;
+}
+
+.tab-btn {
+  padding: 12px 20px;
+  background-color: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: #666;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: none;
+}
+
+.tab-btn:hover {
+  color: #6f4e37;
+}
+
+.tab-btn.active {
+  color: #6f4e37;
+  border-bottom-color: #6f4e37;
+}
+
+.tab-content {
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+
+.tab-content[style*="display: block"] {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Pengaturan Container */
+.pengaturan-container {
+  background-color: white;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.settings-form {
+  padding: 15px 0;
+}
+
+.settings-form h3 {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.settings-form table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.settings-form table tr {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.settings-form table td {
+  padding: 12px;
+  font-size: 14px;
+}
+
+.settings-form table td:first-child {
+  font-weight: 600;
+  color: #555;
+  width: 150px;
+}
+
+/* Laporan Container */
+.laporan-container {
+  padding: 0;
+}
+
+.best-coffeeshop-container {
+  background-color: white;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.best-coffeeshop-container h3 {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.best-coffeeshop-card {
+  background: linear-gradient(135deg, #6f4e37 0%, #8b6f47 100%);
+  color: white;
+  padding: 25px;
+  border-radius: 8px;
+  text-align: center;
+  min-height: 150px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.best-coffeeshop-card strong {
+  font-size: 22px;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.best-coffeeshop-card p {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.laporan-actions {
+  background-color: white;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.btn-export,
+.btn-print {
+  flex: 1;
+  padding: 12px 20px;
+  background-color: #6f4e37;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-export:hover,
+.btn-print:hover {
+  background-color: #5a3e2b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(111, 78, 55, 0.3);
+}
+
+.btn-export:active,
+.btn-print:active {
+  transform: translateY(0);
+}
+
+/* Management Toolbar */
+.management-toolbar {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.management-toolbar input {
+  flex: 1;
+  min-width: 200px;
+}
+
+/* Coffeeshop Management */
+.coffeeshop-management {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ==========================================
+   RESPONSIVE DESIGN
+   ========================================== */
 @media (max-width: 768px) {
+  .main-container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    max-height: 250px;
+    padding: 15px;
+    gap: 10px;
+  }
+
+  .map-container {
+    height: 300px;
+  }
+
+  .navbar-title {
+    font-size: 18px;
+  }
+
+  .navbar-container {
+    padding: 0 10px;
+  }
+
+  .search-container,
+  .info-container,
+  .legend-container {
+    padding: 10px;
+  }
+
+  .modal-content {
+    margin: 30% auto;
+    max-width: 90%;
+  }
+
   .admin-container {
     flex-direction: column;
   }
@@ -985,9 +1381,85 @@ body {
   .data-table td {
     padding: 10px;
   }
+
+  .modal-add-coffeeshop-content {
+    width: 95%;
+    max-width: none;
+  }
+
+  .add-coffeeshop-form {
+    padding: 20px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .modal-add-coffeeshop-header h2 {
+    font-size: 18px;
+  }
+
+  .tab-navigation {
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    padding: 10px 15px;
+    font-size: 12px;
+  }
+
+  .laporan-actions {
+    flex-direction: column;
+  }
+
+  .btn-export,
+  .btn-print {
+    width: 100%;
+  }
+
+  .management-toolbar {
+    flex-direction: column;
+  }
+
+  .management-toolbar input {
+    width: 100%;
+  }
+
+  .pengaturan-container,
+  .best-coffeeshop-container,
+  .laporan-actions {
+    padding: 15px;
+  }
 }
 
 @media (max-width: 480px) {
+  .navbar-title {
+    font-size: 16px;
+  }
+
+  .sidebar {
+    max-height: 200px;
+  }
+
+  .map-container {
+    height: 250px;
+  }
+
+  .btn-about,
+  .btn-admin {
+    padding: 8px 15px;
+    font-size: 12px;
+  }
+
+  .modal-content {
+    padding: 20px;
+    margin: 40% auto;
+  }
+
   .login-card {
     padding: 25px;
   }

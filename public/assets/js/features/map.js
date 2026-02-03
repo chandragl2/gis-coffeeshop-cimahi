@@ -1,79 +1,5 @@
-// DATA DUMMY COFFEESHOP
-
-const coffeeshops = [
-  {
-    id: 1,
-    name: "Kopi Bersaudara",
-    address: "Jl. Pendidikan No. 45, Cimahi",
-    latitude: -6.8886,
-    longitude: 107.557,
-    description:
-      "Kedai kopi tradisional dengan suasana hangat dan cozy. Menyediakan berbagai pilihan kopi premium dari berbagai daerah.",
-  },
-  {
-    id: 2,
-    name: "The Coffee House",
-    address: "Jl. Raya Cimahi No. 120, Cimahi",
-    latitude: -6.895,
-    longitude: 107.548,
-    description:
-      "Tempat nongkrong modern dengan Wi-Fi cepat. Cocok untuk bekerja atau belajar dengan kopi yang nikmat.",
-  },
-  {
-    id: 3,
-    name: "Café Indah",
-    address: "Jl. Sipakubumen No. 78, Cimahi",
-    latitude: -6.882,
-    longitude: 107.562,
-    description:
-      "Kafe dengan interior minimalis yang elegan. Menawarkan menu kopi specialty dan pastry yang lezat.",
-  },
-  {
-    id: 4,
-    name: "Kopi Nusantara",
-    address: "Jl. Kompas No. 32, Cimahi",
-    latitude: -6.9,
-    longitude: 107.55,
-    description:
-      "Kedai kopi lokal yang mengutamakan biji kopi pilihan dari Indonesia. Pelayanan ramah dan harga terjangkau.",
-  },
-  {
-    id: 5,
-    name: "Brew Station",
-    address: "Jl. Moch. Toha No. 15, Cimahi",
-    latitude: -6.89,
-    longitude: 107.555,
-    description:
-      "Specialty coffee shop dengan barista berpengalaman. Menyediakan kelas brewing dan tasting kopi.",
-  },
-  {
-    id: 6,
-    name: "Warkop Seuseupan",
-    address: "Jl. Cipaganti No. 99, Cimahi",
-    latitude: -6.875,
-    longitude: 107.565,
-    description:
-      "Warung kopi tradisional yang legendaris. Terkenal dengan kopi hitam nikmat dan suasana yang ramai.",
-  },
-  {
-    id: 7,
-    name: "Coffee & Co.",
-    address: "Jl. Pasteur No. 67, Cimahi",
-    latitude: -6.905,
-    longitude: 107.542,
-    description:
-      "Kedai kopi contemporary dengan menu internasional. Dilengkapi dengan area outdoor yang nyaman.",
-  },
-  {
-    id: 8,
-    name: "Kopitiam",
-    address: "Jl. Cikampak No. 45, Cimahi",
-    latitude: -6.885,
-    longitude: 107.57,
-    description:
-      "Rumah kopi klasik dengan sentuhan vintage. Menghadirkan pengalaman minum kopi ala nenek moyang.",
-  },
-];
+// DATA COFFEESHOP - DARI DATABASE SAJA
+let coffeeshops = [];
 
 // MAPBOX INITIALIZATION
 
@@ -93,6 +19,30 @@ const map = new mapboxgl.Map({
 
 // Add Navigation Control
 map.addControl(new mapboxgl.NavigationControl(), "top-right");
+
+// ==========================================
+// FUNCTION: Load data dari database
+// ==========================================
+async function loadCoffeeshopsFromDatabase() {
+  try {
+    const response = await fetch("../../backend/api/coffeeshops.php");
+    const result = await response.json();
+
+    if (result.success && result.data && result.data.length > 0) {
+      coffeeshops = result.data;
+      console.log("✅ Data dari database:", coffeeshops.length, "item");
+      return true;
+    } else {
+      console.warn("⚠️ Tidak ada data di database");
+      coffeeshops = [];
+      return false;
+    }
+  } catch (error) {
+    console.error("❌ Error load database:", error);
+    coffeeshops = [];
+    return false;
+  }
+}
 
 // FUNCTION: Add Markers to Map
 
@@ -278,11 +228,19 @@ window.addEventListener("click", (e) => {
 // INITIALIZATION
 // ==========================================
 
-// Wait for map to load before adding markers
-map.on("load", () => {
+// Wait for map to load
+map.on("load", async () => {
+  console.log("📍 Map loaded, loading coffeeshop data...");
+
+  // Load dari database
+  await loadCoffeeshopsFromDatabase();
   addMarkersToMap(coffeeshops);
-  console.log("✅ Map loaded successfully!");
-  console.log(`📍 Total coffeeshop: ${coffeeshops.length}`);
+
+  // Auto-refresh setiap 5 detik
+  setInterval(async () => {
+    await loadCoffeeshopsFromDatabase();
+    addMarkersToMap(coffeeshops);
+  }, 5000);
 });
 
-console.log("🚀 Sistem Informasi Geografis Coffeeshop Cimahi - Ready!");
+console.log("🚀 GIS Coffeeshop Cimahi - Database Only!");
