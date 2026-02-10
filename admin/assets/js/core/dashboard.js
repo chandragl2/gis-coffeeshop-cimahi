@@ -88,7 +88,7 @@ function updateTable() {
     row.onclick = (e) => {
       // Don't open detail if clicking button
       if (e.target.tagName === "BUTTON") return;
-      
+
       const id = row.getAttribute("data-id");
       const coffeeshop = allCoffeeshops.find((c) => c.id == id);
       if (coffeeshop) {
@@ -154,16 +154,18 @@ function openDetailModal(coffeeshop) {
   // Set values
   document.getElementById("detailName").textContent = coffeeshop.name;
   document.getElementById("detailAddress").textContent = coffeeshop.address;
-  document.getElementById("detailPhone").textContent = coffeeshop.phone || "Tidak ada";
-  document.getElementById("detailCoords").textContent = 
+  document.getElementById("detailPhone").textContent =
+    coffeeshop.phone || "Tidak ada";
+  document.getElementById("detailCoords").textContent =
     `${coffeeshop.latitude.toFixed(4)}, ${coffeeshop.longitude.toFixed(4)}`;
-  document.getElementById("detailRating").textContent = `${coffeeshop.rating} ⭐`;
+  document.getElementById("detailRating").textContent =
+    `${coffeeshop.rating} ⭐`;
   document.getElementById("detailStatus").textContent = coffeeshop.status;
-  
+
   // Handle photo
   const photoImg = document.getElementById("detailPhoto");
   const noPhoto = document.getElementById("noPhoto");
-  
+
   if (coffeeshop.photo) {
     photoImg.src = "../" + coffeeshop.photo;
     photoImg.style.display = "block";
@@ -172,13 +174,13 @@ function openDetailModal(coffeeshop) {
     photoImg.style.display = "none";
     noPhoto.style.display = "block";
   }
-  
+
   // Show modal
   const modal = document.getElementById("detailCoffeeshopModal");
   if (modal) {
     modal.classList.add("active");
   }
-  
+
   stopAutoRefresh();
 }
 
@@ -195,13 +197,13 @@ function closeDetailModal() {
 document.addEventListener("DOMContentLoaded", () => {
   const detailCloseBtn = document.querySelector(".close-modal-btn-detail");
   const detailModal = document.getElementById("detailCoffeeshopModal");
-  
+
   if (detailCloseBtn) {
     detailCloseBtn.onclick = () => {
       closeDetailModal();
     };
   }
-  
+
   // Close modal when clicking overlay
   if (detailModal) {
     detailModal.onclick = (e) => {

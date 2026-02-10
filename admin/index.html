@@ -435,7 +435,7 @@
               accept="image/*"
             />
             <small>Format: JPG, PNG. Ukuran maksimal: 2MB</small>
-            <div id="photoPreview" style="margin-top: 10px;"></div>
+            <div id="photoPreview" style="margin-top: 10px"></div>
           </div>
 
           <div class="form-actions">
@@ -450,22 +450,31 @@
 
     <!-- Modal Detail Coffeeshop (View) -->
     <div id="detailCoffeeshopModal" class="modal-overlay">
-      <div class="modal-content" style="max-width: 600px;">
+      <div class="modal-content" style="max-width: 600px">
         <div class="modal-add-coffeeshop-header">
           <h2>Detail Coffeeshop</h2>
           <button class="close-modal-btn-detail">&times;</button>
         </div>
 
-        <div class="detail-content" style="padding: 20px;">
+        <div class="detail-content" style="padding: 20px">
           <!-- Photo -->
-          <div style="margin-bottom: 20px; text-align: center;">
-            <img id="detailPhoto" src="" alt="Foto Coffeeshop" 
-                 style="max-width: 100%; max-height: 300px; border-radius: 8px; display: none;">
-            <p id="noPhoto" style="color: #999;">Tidak ada foto</p>
+          <div style="margin-bottom: 20px; text-align: center">
+            <img
+              id="detailPhoto"
+              src=""
+              alt="Foto Coffeeshop"
+              style="
+                max-width: 100%;
+                max-height: 300px;
+                border-radius: 8px;
+                display: none;
+              "
+            />
+            <p id="noPhoto" style="color: #999">Tidak ada foto</p>
           </div>
 
           <!-- Info -->
-          <div style="border-top: 1px solid #eee; padding-top: 15px;">
+          <div style="border-top: 1px solid #eee; padding-top: 15px">
             <p><strong>Nama:</strong> <span id="detailName"></span></p>
             <p><strong>Alamat:</strong> <span id="detailAddress"></span></p>
             <p><strong>Telepon:</strong> <span id="detailPhone"></span></p>
@@ -475,8 +484,10 @@
           </div>
 
           <!-- Close Button -->
-          <div style="margin-top: 20px; text-align: right;">
-            <button class="btn-cancel" onclick="closeDetailModal()">Tutup</button>
+          <div style="margin-top: 20px; text-align: right">
+            <button class="btn-cancel" onclick="closeDetailModal()">
+              Tutup
+            </button>
           </div>
         </div>
       </div>
