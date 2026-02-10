@@ -16,6 +16,13 @@ function openEditModal(coffeeshop) {
   document.getElementById("coffeeshopRating").value = coffeeshop.rating;
   document.getElementById("coffeeshopStatus").value = coffeeshop.status;
   document.getElementById("coffeeshopPhone").value = coffeeshop.phone || "";
+  
+  // Reset photo input
+  document.getElementById("coffeeshopPhoto").value = "";
+  const photoPreview = document.getElementById("photoPreview");
+  if (photoPreview) {
+    photoPreview.innerHTML = "";
+  }
 
   // Change button text
   const submitBtn = form.querySelector(".btn-submit");
@@ -34,6 +41,10 @@ function closeEditMode() {
     form.reset();
     const submitBtn = form.querySelector(".btn-submit");
     submitBtn.textContent = "💾 Simpan Coffeeshop";
+    const photoPreview = document.getElementById("photoPreview");
+    if (photoPreview) {
+      photoPreview.innerHTML = "";
+    }
   }
 }
 
@@ -98,13 +109,64 @@ document.querySelectorAll(".btn-add-new").forEach((btn) => {
   });
 });
 
+// Convert file to Base64
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      resolve(reader.result);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 // Form submit
 const form = document.getElementById("addCoffeeshopForm");
 if (form) {
+  // Photo preview
+  const photoInput = document.getElementById("coffeeshopPhoto");
+  const photoPreview = document.getElementById("photoPreview");
+  
+  if (photoInput) {
+    photoInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        // Validate file
+        const maxSize = 2 * 1024 * 1024; // 2MB
+        if (file.size > maxSize) {
+          alert("Ukuran file terlalu besar! Maksimal 2MB");
+          photoInput.value = "";
+          photoPreview.innerHTML = "";
+          return;
+        }
+        
+        // Show preview
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          photoPreview.innerHTML = `
+            <img src="${event.target.result}" style="max-width: 200px; max-height: 200px; border-radius: 8px;">
+          `;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        photoPreview.innerHTML = "";
+      }
+    });
+  }
+  
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const editId = form.dataset.editId;
+    
+    // Get photo file
+    let photoBase64 = null;
+    const photoFile = document.getElementById("coffeeshopPhoto").files[0];
+    if (photoFile) {
+      photoBase64 = await fileToBase64(photoFile);
+    }
+    
     const data = {
       name: document.getElementById("coffeeshopName").value,
       address: document.getElementById("coffeeshopAddress").value,
@@ -113,6 +175,7 @@ if (form) {
       rating: parseFloat(document.getElementById("coffeeshopRating").value),
       status: document.getElementById("coffeeshopStatus").value,
       phone: document.getElementById("coffeeshopPhone").value || null,
+      photo: photoBase64,
     };
 
     // Jika edit mode, tambahkan ID

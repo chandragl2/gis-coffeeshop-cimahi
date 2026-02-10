@@ -35,6 +35,47 @@ if (!$mysqli) {
     error('Database connection failed', null, 500);
 }
 
+// ==========================================
+// HELPER: Save photo from base64
+// ==========================================
+function save_photo_from_base64($base64Data) {
+    try {
+        // Extract base64 data without data URI prefix
+        if (strpos($base64Data, 'data:image') === 0) {
+            // Remove data:image/jpeg;base64, or similar prefix
+            $base64Data = preg_replace('/^data:image\/\w+;base64,/', '', $base64Data);
+        }
+        
+        // Decode base64
+        $imageData = base64_decode($base64Data, true);
+        if ($imageData === false) {
+            throw new Exception('Invalid base64 data');
+        }
+        
+        // Create uploads directory if not exists
+        $uploadsDir = __DIR__ . '/../../uploads/coffeeshops';
+        if (!file_exists($uploadsDir)) {
+            mkdir($uploadsDir, 0777, true);
+        }
+        
+        // Generate unique filename
+        $filename = 'photo_' . uniqid() . '_' . time() . '.jpg';
+        $filePath = $uploadsDir . '/' . $filename;
+        
+        // Save file
+        if (file_put_contents($filePath, $imageData) === false) {
+            throw new Exception('Failed to save image');
+        }
+        
+        // Return relative path for database storage
+        return 'uploads/coffeeshops/' . $filename;
+        
+    } catch (Exception $e) {
+        error_log('Photo upload error: ' . $e->getMessage());
+        return null;
+    }
+}
+
 // Route based on HTTP method
 $method = $_SERVER['REQUEST_METHOD'];
 
@@ -62,7 +103,7 @@ function get_coffeeshops() {
     global $mysqli;
     
     try {
-        $query = "SELECT id, name, address, latitude, longitude, rating, status, phone, category, kecamatan, kelurahan, description, created_at 
+        $query = "SELECT id, name, address, latitude, longitude, rating, status, phone, photo, category, kecamatan, kelurahan, description, created_at 
                   FROM coffeeshops 
                   WHERE 1=1";
         
@@ -139,10 +180,16 @@ function add_coffeeshop() {
             error(implode(', ', $validation2['errors']), null, 400);
         }
         
+        // Handle photo upload if provided
+        $photoPath = null;
+        if (!empty($input['photo']) && is_string($input['photo'])) {
+            $photoPath = save_photo_from_base64($input['photo']);
+        }
+        
         // Prepare statement
         $stmt = $mysqli->prepare(
-            "INSERT INTO coffeeshops (name, address, latitude, longitude, rating, status, phone, category, kecamatan, kelurahan, description) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+            "INSERT INTO coffeeshops (name, address, latitude, longitude, rating, status, phone, photo, category, kecamatan, kelurahan, description) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
         );
         
         if (!$stmt) {
@@ -150,8 +197,13 @@ function add_coffeeshop() {
         }
         
         // Use safe bind param with ordered fields
-        $order = ['name', 'address', 'latitude', 'longitude', 'rating', 'status', 'phone', 'category', 'kecamatan', 'kelurahan', 'description'];
+        $order = ['name', 'address', 'latitude', 'longitude', 'rating', 'status', 'phone', 'photo', 'category', 'kecamatan', 'kelurahan', 'description'];
         $params = generate_bind_params($data, $order);
+        
+        // Inject photo path into params
+        $photoData = $input;
+        $photoData['photo'] = $photoPath;
+        $params = generate_bind_params($photoData, $order);
         
         $stmt->bind_param($params['types'], ...$params['values']);
         
@@ -207,10 +259,16 @@ function edit_coffeeshop() {
             error(implode(', ', $validation2['errors']), null, 400);
         }
         
+        // Handle photo upload if provided
+        $photoPath = null;
+        if (!empty($input['photo']) && is_string($input['photo']) && strpos($input['photo'], 'data:image') === 0) {
+            $photoPath = save_photo_from_base64($input['photo']);
+        }
+        
         // Prepare statement
         $stmt = $mysqli->prepare(
             "UPDATE coffeeshops 
-             SET name = ?, address = ?, latitude = ?, longitude = ?, rating = ?, status = ?, phone = ?, category = ?, kecamatan = ?, kelurahan = ?, description = ? 
+             SET name = ?, address = ?, latitude = ?, longitude = ?, rating = ?, status = ?, phone = ?, photo = ?, category = ?, kecamatan = ?, kelurahan = ?, description = ? 
              WHERE id = ?"
         );
         
@@ -218,9 +276,11 @@ function edit_coffeeshop() {
             throw new Exception('Prepare failed: ' . $mysqli->error);
         }
         
-        // Use safe bind param with ordered fields (include id at the end)
-        $order = ['name', 'address', 'latitude', 'longitude', 'rating', 'status', 'phone', 'category', 'kecamatan', 'kelurahan', 'description'];
-        $params = generate_bind_params($data, $order);
+        // Use safe bind param with ordered fields (include id and photo at the end)
+        $order = ['name', 'address', 'latitude', 'longitude', 'rating', 'status', 'phone', 'photo', 'category', 'kecamatan', 'kelurahan', 'description'];
+        $photoData = $input;
+        $photoData['photo'] = $photoPath !== null ? $photoPath : ($input['photo'] ?? null);
+        $params = generate_bind_params($photoData, $order);
         $params['types'] .= 'i'; // Add integer type for id
         $params['values'][] = $id; // Add id to values
         

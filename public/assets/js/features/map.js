@@ -61,8 +61,16 @@ function addMarkersToMap(coffeeshopsToShow = coffeeshops) {
     markerElement.style.cursor = "pointer";
 
     // Create popup
+    const photoHTML = coffeeshop.photo ? 
+      `<div style="margin-bottom: 10px; text-align: center;">
+         <img src="../${coffeeshop.photo}" alt="${coffeeshop.name}" 
+              style="width: 100%; max-width: 300px; height: auto; border-radius: 6px; max-height: 250px; object-fit: cover;">
+       </div>` : 
+      '';
+    
     const popupContent = `
             <div class="popup-content">
+                ${photoHTML}
                 <h3>${coffeeshop.name}</h3>
                 <p><strong>📍 Alamat:</strong></p>
                 <p>${coffeeshop.address}</p>
@@ -130,8 +138,16 @@ function addMarkersToMap(coffeeshopsToShow = coffeeshops) {
 // ==========================================
 function displayCoffeeshopInfo(coffeeshop) {
   const infoCont = document.getElementById("coffeeshopInfo");
+  const photoHTML = coffeeshop.photo ? 
+    `<div style="margin-bottom: 15px; text-align: center;">
+      <img src="../${coffeeshop.photo}" alt="${coffeeshop.name}" 
+           style="width: 100%; border-radius: 8px; max-height: 300px; object-fit: cover;">
+    </div>` : 
+    '<p style="color: #999;">Foto tidak tersedia</p>';
+    
   infoCont.innerHTML = `
         <div class="info-detail">
+            ${photoHTML}
             <h4>${coffeeshop.name}</h4>
             <p><strong>📍 Alamat:</strong></p>
             <p>${coffeeshop.address}</p>
